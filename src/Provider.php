@@ -49,13 +49,13 @@ class Provider extends AbstractProvider implements ProviderInterface
     {
         $response = $this->getHttpClient()->get('https://graph.qq.com/oauth2.0/me?'.$token);
 
-        $this->openId = json_decode($this->removeCallback($response->getBody()), true)['openid'];
+        $this->openId = json_decode($this->removeCallback($response->getBody()->getContents()), true)['openid'];
 
         $response = $this->getHttpClient()->get(
             "https://graph.qq.com/user/get_user_info?$token&openid={$this->openId}&oauth_consumer_key={$this->clientId}"
         );
 
-        return json_decode($this->removeCallback($response->getBody()), true);
+        return json_decode($this->removeCallback($response->getBody()->getContents()), true);
     }
 
     /**
@@ -78,10 +78,9 @@ class Provider extends AbstractProvider implements ProviderInterface
      */
     protected function getTokenFields($code)
     {
-        $tokenFields = parent::getTokenFields($code);
-        $tokenFields['grant_type'] = 'authorization_code';
-
-        return $tokenFields;
+        return array_merge(parent::getTokenFields($code), [
+            'grant_type' => 'authorization_code',
+        ]);
     }
 
     /**
@@ -91,9 +90,11 @@ class Provider extends AbstractProvider implements ProviderInterface
      */
     public function getAccessToken($code)
     {
-        $response = $this->getHttpClient()->get($this->getTokenUrl(), ['query' => $this->getTokenFields($code)]);
+        $response = $this->getHttpClient()->get($this->getTokenUrl(), [
+            'query' => $this->getTokenFields($code),
+        ]);
 
-        return $response->getBody();
+        return $response->getBody()->getContents();
     }
 
     /**

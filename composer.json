@@ -2,13 +2,13 @@
     "name": "socialiteproviders/qq",
     "description": "Qq.com OAuth2 Provider for Laravel Socialite",
     "license": "MIT",
-    "authors": [{
+    "authors": {
         "name": "heui",
         "email": "runphp@qq.com"
-    }],
+    },
     "require": {
-        "php": ">=5.4.0",
-        "socialiteproviders/manager": "0.1.*"
+        "php": ">=5.5.0",
+        "socialiteproviders/manager": "~1.0"
     },
     "autoload": {
         "psr-4": {
