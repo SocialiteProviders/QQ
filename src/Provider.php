@@ -100,7 +100,7 @@ class Provider extends AbstractProvider implements ProviderInterface
         ]);
 
         $body = $response->getBody()->getContents();
-        
+
         $this->credentialsResponseBody = $body;
 
         return $body;
