@@ -99,11 +99,9 @@ class Provider extends AbstractProvider implements ProviderInterface
             'query' => $this->getTokenFields($code),
         ]);
 
-        $body = $response->getBody()->getContents();
+        $this->credentialsResponseBody = json_decode($response->getBody(), true);
 
-        $this->credentialsResponseBody = $body;
-
-        return $body;
+        return $response->getBody()->getContents();
     }
 
     /**
