@@ -94,15 +94,28 @@ class Provider extends AbstractProvider implements ProviderInterface
      * @see \Laravel\Socialite\Two\AbstractProvider::getAccessToken()
      */
     public function getAccessToken($code)
-    {
-        $response = $this->getHttpClient()->get($this->getTokenUrl(), [
-            'query' => $this->getTokenFields($code),
-        ]);
+	{
+		$response = $this->getHttpClient()->get($this->getTokenUrl(), [
+			'query' => $this->getTokenFields($code),
+		]);
 
-        $this->credentialsResponseBody = json_decode($response->getBody(), true);
+		/*
+		 * Response content format is "access_token=FE04************************CCE2&expires_in=7776000&refresh_token=88E4************************BE14"
+		 * Not like "{'access_token':'FE04************************CCE2','expires_in':7776000,'refresh_token':'88E4************************BE14'}"
+		 * So it can't be decode by json_decode!
+		*/
+		$content = $response->getBody()->getContents();
+		$result = [];
+		foreach (explode('&', $content) as $item) {
+			$arr = explode('=', $item);
+			$result[$arr[0]] = $arr[1];
+		}
 
-        return $response->getBody()->getContents();
-    }
+		$this->credentialsResponseBody = $result;
+//		$this->credentialsResponseBody = json_decode($response->getBody(), true);
+
+		return 'access_token=' . $result['access_token'];
+	}
 
     /**
      * @param mixed $response
