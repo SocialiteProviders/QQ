@@ -51,17 +51,17 @@ class Provider extends AbstractProvider implements ProviderInterface
      * @see \Laravel\Socialite\Two\AbstractProvider::getUserByToken()
      */
     protected function getUserByToken($token)
-    {
-        $response = $this->getHttpClient()->get('https://graph.qq.com/oauth2.0/me?'.$token);
+	{
+		$response = $this->getHttpClient()->get('https://graph.qq.com/oauth2.0/me?access_token=' . $token);
 
-        $this->openId = json_decode($this->removeCallback($response->getBody()->getContents()), true)['openid'];
+		$this->openId = json_decode($this->removeCallback($response->getBody()->getContents()), true)['openid'];
 
-        $response = $this->getHttpClient()->get(
-            "https://graph.qq.com/user/get_user_info?$token&openid={$this->openId}&oauth_consumer_key={$this->clientId}"
-        );
+		$response = $this->getHttpClient()->get(
+			"https://graph.qq.com/user/get_user_info?access_token=$token&openid={$this->openId}&oauth_consumer_key={$this->clientId}"
+		);
 
-        return json_decode($this->removeCallback($response->getBody()->getContents()), true);
-    }
+		return json_decode($this->removeCallback($response->getBody()->getContents()), true);
+	}
 
     /**
      * {@inheritdoc}.
@@ -114,7 +114,7 @@ class Provider extends AbstractProvider implements ProviderInterface
 		$this->credentialsResponseBody = $result;
 //		$this->credentialsResponseBody = json_decode($response->getBody(), true);
 
-		return 'access_token=' . $result['access_token'];
+		return $result['access_token'];
 	}
 
     /**
