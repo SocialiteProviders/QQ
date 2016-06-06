@@ -93,7 +93,7 @@ class Provider extends AbstractProvider implements ProviderInterface
      *
      * @see \Laravel\Socialite\Two\AbstractProvider::getAccessToken()
      */
-    public function getAccessToken($code)
+    public function getAccessTokenResponse($code)
     {
         $response = $this->getHttpClient()->get($this->getTokenUrl(), [
             'query' => $this->getTokenFields($code),
@@ -105,16 +105,9 @@ class Provider extends AbstractProvider implements ProviderInterface
          * So it can't be decode by json_decode!
         */
         $content = $response->getBody()->getContents();
-        $result = [];
-        foreach (explode('&', $content) as $item) {
-            $arr = explode('=', $item);
-            $result[$arr[0]] = $arr[1];
-        }
+        parse_str($content, $result);
 
-        $this->credentialsResponseBody = $result;
-//		$this->credentialsResponseBody = json_decode($response->getBody(), true);
-
-        return $result['access_token'];
+        return $result;
     }
 
     /**
