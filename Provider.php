@@ -137,6 +137,10 @@ class Provider extends AbstractProvider implements ProviderInterface
         */
         $content = $response->getBody()->getContents();
         parse_str($content, $result);
+        if (!isset($result['access_token'])) {
+            // When error content like "callback( {"error":100020,"error_description":"code is reused error"} );"
+            $result = json_decode($this->removeCallback($content), true);
+        }
 
         return $result;
     }
